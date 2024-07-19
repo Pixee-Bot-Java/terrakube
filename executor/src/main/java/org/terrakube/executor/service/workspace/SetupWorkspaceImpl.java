@@ -1,5 +1,7 @@
 package org.terrakube.executor.service.workspace;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -166,7 +168,7 @@ public class SetupWorkspaceImpl implements SetupWorkspace {
         File terraformTarGz = new File(tarGzFolder.getPath() + "/terraformContent.tar.gz");
         OutputStream stream = null;
         try {
-            URL url = new URL(source);
+            URL url = Urls.create(source, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
             URLConnection urlConnection = url.openConnection();
             urlConnection.setRequestProperty("Authorization", "Bearer " + workspaceSecurity.generateAccessToken(1));
             stream = new FileOutputStream(terraformTarGz);

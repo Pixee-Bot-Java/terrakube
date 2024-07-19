@@ -4,6 +4,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -142,9 +144,9 @@ public class AwsTerraformStateImpl implements TerraformState {
                         log.info("Downloading state from {}", stateUrl);
 
                         //log.info("Buket location: {}", new URL(stateUrl).getPath().replace(endpoint != null ? bucketName + "/tfstate" :"/tfstate","tfstate").substring(1));
-                        log.info("Buket location: {}", "tfstate/" + new URL(stateUrl).getPath().split("/tfstate/")[1]);
+                        log.info("Buket location: {}", "tfstate/" + Urls.create(stateUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).getPath().split("/tfstate/")[1]);
 
-                        S3Object s3object = s3client.getObject(bucketName, "tfstate/" + new URL(stateUrl).getPath().split("/tfstate/")[1]);
+                        S3Object s3object = s3client.getObject(bucketName, "tfstate/" + Urls.create(stateUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).getPath().split("/tfstate/")[1]);
                         S3ObjectInputStream inputStream = s3object.getObjectContent();
                         byte[] data = inputStream.getDelegateStream().readAllBytes();
 

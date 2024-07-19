@@ -7,6 +7,8 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.common.sas.SasProtocol;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -158,7 +160,7 @@ public class AzureTerraformStateImpl implements TerraformState {
                     try {
                         log.info("Downloading state from {}:", stateUrl);
 
-                        URL blobURL = new URL(stateUrl);
+                        URL blobURL = Urls.create(stateUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
                         String blobName = blobURL.getPath().replace("/tfstate/", "").replace("%2F","/");
 
                         log.info("BlobName: {}", blobName);
@@ -171,7 +173,7 @@ public class AzureTerraformStateImpl implements TerraformState {
                                 .setProtocol(SasProtocol.HTTPS_ONLY);
 
                         FileUtils.copyURLToFile(
-                                new URL(String.format("%s?%s", blobClient.getBlobUrl(), blobClient.generateSas(builder))),
+                                Urls.create(String.format("%s?%s", blobClient.getBlobUrl(), blobClient.generateSas(builder)), Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS),
                                 new File(workingDirectory.getAbsolutePath() + "/" + TERRAFORM_PLAN_FILE),
                                 30000,
                                 30000);
