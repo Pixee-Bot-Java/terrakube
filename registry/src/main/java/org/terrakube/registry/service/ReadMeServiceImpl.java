@@ -1,5 +1,6 @@
 package org.terrakube.registry.service;
 
+import io.github.pixee.security.BoundedLineReader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -61,7 +62,7 @@ public class ReadMeServiceImpl {
         StringBuilder resultStringBuilder = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = BoundedLineReader.readLine(br, 5_000_000)) != null) {
                 resultStringBuilder.append(line).append("\n");
             }
         }
