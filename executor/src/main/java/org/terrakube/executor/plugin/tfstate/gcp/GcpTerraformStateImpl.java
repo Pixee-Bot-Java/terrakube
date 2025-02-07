@@ -3,6 +3,8 @@ package org.terrakube.executor.plugin.tfstate.gcp;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -119,10 +121,10 @@ public class GcpTerraformStateImpl implements TerraformState {
                     try {
                         log.info("Downloading state from {}:", stateUrl);
                         String buketNamePath = String.format("/%s/",bucketName);
-                        log.info("Generating pre-signed URL. {}", new URL(stateUrl).getPath().replace(buketNamePath, ""));
+                        log.info("Generating pre-signed URL. {}", Urls.create(stateUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).getPath().replace(buketNamePath, ""));
 
                         // Define resource
-                        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, new URL(stateUrl).getPath().replace(buketNamePath, ""))).build();
+                        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, Urls.create(stateUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).getPath().replace(buketNamePath, ""))).build();
 
                         URL signedUrl = storage.signUrl(blobInfo, 5, TimeUnit.MINUTES);
 

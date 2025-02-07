@@ -1,5 +1,7 @@
 package org.terrakube.api.plugin.vcs.provider.bitbucket;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -91,7 +93,7 @@ public class BitBucketWebhookService extends WebhookServiceBase {
 
         try {
             String accessToken = "Bearer " + workspaceRepository.findById(UUID.fromString(workspaceId)).get().getVcs().getAccessToken();
-            URL urlBitbucketApi = new URL(diffFile);
+            URL urlBitbucketApi = Urls.create(diffFile, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
             log.info("Base URL: {}", String.format("%s://%s", urlBitbucketApi.getProtocol(), urlBitbucketApi.getHost()));
             log.info("URI: {}", urlBitbucketApi.getPath());
             WebClient webClient = WebClient.builder()

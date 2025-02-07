@@ -1,5 +1,7 @@
 package org.terrakube.executor.service.workspace.security;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -93,7 +95,7 @@ public class WorkspaceSecurityImpl implements WorkspaceSecurity {
         String credentialFileContent = String.format(CREDENTIALS_CONTENT, registryDomain, token);
         String credentialFileContent2 = "";
         try {
-            credentialFileContent2 = String.format(CREDENTIALS_CONTENT, new URL(apiUrl).getHost(), token);
+            credentialFileContent2 = String.format(CREDENTIALS_CONTENT, Urls.create(apiUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS).getHost(), token);
         } catch (MalformedURLException e) {
             log.error(e.getMessage());
         }
