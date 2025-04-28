@@ -1,5 +1,6 @@
 package org.terrakube.api.plugin.token.dynamic;
 
+import io.github.pixee.security.BoundedLineReader;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -165,7 +166,7 @@ public class DynamicCredentialsService {
         String privateKeyPEMFinal = "";
         String line;
         BufferedReader bufReader = new BufferedReader(new StringReader(rsaPrivateKey));
-        while ((line = bufReader.readLine()) != null) {
+        while ((line = BoundedLineReader.readLine(bufReader, 5_000_000)) != null) {
             privateKeyPEMFinal += line;
         }
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyPEMFinal));
@@ -185,7 +186,7 @@ public class DynamicCredentialsService {
             String publicKeyPEMFinal = "";
             String line;
             BufferedReader bufReader = new BufferedReader(new StringReader(publicKeyPEM));
-            while ((line = bufReader.readLine()) != null) {
+            while ((line = BoundedLineReader.readLine(bufReader, 5_000_000)) != null) {
                 publicKeyPEMFinal += line;
             }
 
