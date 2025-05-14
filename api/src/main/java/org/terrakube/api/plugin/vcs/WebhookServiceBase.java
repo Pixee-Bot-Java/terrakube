@@ -1,5 +1,7 @@
 package org.terrakube.api.plugin.vcs;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +31,7 @@ public class WebhookServiceBase {
 
     protected String extractOwnerAndRepo(String repoUrl) {
         try {
-            URL url = new URL(repoUrl);
+            URL url = Urls.create(repoUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
             String[] parts = url.getPath().split("/");
             String owner = parts[1];
             String repo = parts[2].replace(".git", "");

@@ -1,5 +1,7 @@
 package org.terrakube.api.plugin.vcs.provider.gitlab;
 
+import io.github.pixee.security.HostValidator;
+import io.github.pixee.security.Urls;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpEntity;
@@ -150,7 +152,7 @@ public class GitLabWebhookService {
 
     private String extractOwnerAndRepo(String repoUrl) {
         try {
-            URL url = new URL(repoUrl);
+            URL url = Urls.create(repoUrl, Urls.HTTP_PROTOCOLS, HostValidator.DENY_COMMON_INFRASTRUCTURE_TARGETS);
             String[] parts = url.getPath().split("/");
             String ownerAndRepo = String.join("/", Arrays.copyOfRange(parts, 1, parts.length)).replace(".git", "");
             return URLEncoder.encode(ownerAndRepo, "UTF-8");
