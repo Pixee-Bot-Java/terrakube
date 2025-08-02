@@ -1,5 +1,6 @@
 package org.terrakube.executor.service.scripts.bash;
 
+import io.github.pixee.security.BoundedLineReader;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Map;
@@ -95,7 +96,7 @@ public final class ProcessLauncher {
         try {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
                 String line;
-                while ((line = reader.readLine()) != null) {
+                while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                     listener.accept(line);
                 }
             }
